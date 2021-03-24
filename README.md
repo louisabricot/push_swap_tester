@@ -13,12 +13,13 @@ This tester *DOES NOT* check that your checker works correctly.
 
 Push_swap_tester is a little tester that shows you how your push_swap performs.
 It displays the number of instructions performed by your push_swap in color, here is what the colors mean:
-- white means amazing!
-- blue means good
-- green means ok
-- orange means really bad
+```diff
+# white means amazing!
+@@ blue means good @@
++ green means ok
+! orange means really bad
 - red means eliminatory
-
+```
 Here's what is looks like...
 
 ![Screenshot](screenshot.png)
