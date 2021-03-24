@@ -20,7 +20,6 @@ It displays the number of instructions performed by your push_swap in color, her
 ! orange means really bad
 - red means eliminatory
 ```
-Here's what is looks like...
 
 ![Screenshot](screenshot.png)
 
