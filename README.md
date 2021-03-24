@@ -1,5 +1,5 @@
 # A tester for Push_swap@42 - To see what's going on
-This tester uses genstack to generate a random series of integers and shows the output of your checker program with the number of moves performed by your push_swap program. 
+This tester shows the performance of your push_swap program. 
 
 This tester *DOES NOT* check that your checker works correctly.
 
