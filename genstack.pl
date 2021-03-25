@@ -13,7 +13,7 @@ $min = $ARGV[1];
 $max = $ARGV[2];
 @stack = ();
 
-if (!$$stacksize || !$min || !$max || $stacksize < 0 || $min >= $max)
+if (!$stacksize || !$min || !$max || $stacksize < 0 || $min >= $max)
 {
 	print "Usage: ./genstack.pl stacksize min max";
 }
