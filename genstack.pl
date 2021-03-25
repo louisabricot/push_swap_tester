@@ -13,10 +13,13 @@ $min = $ARGV[1];
 $max = $ARGV[2];
 @stack = ();
 
-for( $num = 0; $num < $stacksize; $num++ ) {
-	$n = int(srand() % ($max- $min) + $min);
-	if (!(grep { $_ eq $n } @stack)) {
+for($num = 0; $num < $stacksize; )
+{
+	$n = int(srand() % ($max - $min + 1) + $min);
+	if (!(grep { $_ eq $n } @stack))
+	{
 		push @stack, $n;
+		$num++;
 	}
 }
 print "@stack\n";
