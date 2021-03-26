@@ -3,8 +3,8 @@ This tester shows the performance of your push_swap program.
 
 This tester *DOES NOT* check that your checker works correctly.
 
-* [What's push_swap tester?](#what's-push_swap_tester?)
-* [How do I run this tester?](#how-do-i-run-this-tester?)
+* [What's push_swap tester?](#what's-push_swap_tester)
+* [How do I run this tester?](#how-do-I-run-this-tester)
 * [Project status](#project-status)
 
 
