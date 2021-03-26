@@ -39,3 +39,6 @@ the following command will perform 100 tests with a stack of 100 integers, then 
 ```bash
 bash push_swap_tester/tester.sh ../push_swap 100-1002 100
 ```
+
+## Project status
+This project was submitted as is.
