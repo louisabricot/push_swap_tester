@@ -3,9 +3,8 @@ This tester shows the performance of your push_swap program.
 
 This tester *DOES NOT* check that your checker works correctly.
 
-# Installation
-* [What's push_swap tester?](#what's-push_swap_tester?)
-* [How do I run this tester?](#how-do-I-run-this-tester?)
+* [What's push_swap tester?](#what's-push_swap_tester)
+* [How do I run this tester?](#how-do-I-run-this-tester)
 * [Project status](#project-status)
 
 
@@ -40,3 +39,6 @@ the following command will perform 100 tests with a stack of 100 integers, then 
 ```bash
 bash push_swap_tester/tester.sh ../push_swap 100-1002 100
 ```
+
+## Project status
+This project was submitted as is.
