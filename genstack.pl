@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
 # Created by tharchen with a ton of <3
+# Thanks to llefranc for the correction <3
 
 # usage: ./genstack stacksize min max
 # exemple: ./genstack 20 0 1000
@@ -13,10 +14,14 @@ $min = $ARGV[1];
 $max = $ARGV[2];
 @stack = ();
 
-for( $num = 0; $num < $stacksize; $num++ ) {
+for ($num = 0; $num < $stacksize; )
+{
 	$n = int(srand() % ($max- $min) + $min);
-	if (!(grep { $_ eq $n } @stack)) {
+	if (!(grep { $_ eq $n } @stack))
+	{
 		push @stack, $n;
+		$num++;
 	}
 }
 print "@stack\n";
+
