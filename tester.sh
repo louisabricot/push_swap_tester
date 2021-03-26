@@ -57,7 +57,7 @@ if [[ $TotalNbTest -lt 1 ]]; then
 	exit -1;
 fi 
 
-if [[ $endRange < $startRange ]]; then
+if (( $endRange < $startRange )); then
 	printf "${RED}error: invalid range\n${NOCOLOR}" >&2
 	exit -1
 fi
@@ -77,8 +77,9 @@ elif ! [[ -x "$1/checker" ]]; then
 else
 	printf "${GREEN}Testing push_swap with $TotalNbTest tests from $startRange to $endRange \n\n${NOCOLOR}" >&2
 fi
-TOTAL=`expr 0`
+
 for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
+	TOTAL=0
 	printf "${PURPLE} Generating random numbers for stack_size $stack_size...\n\n${NOCOLOR}"
   for ((testNB = 0; testNB < $TotalNbTest; testNB++)); do
   	printf "${DARKGRAY} TEST $testNB: ${NOCOLOR}"
@@ -133,12 +134,10 @@ for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
 		fi
 	fi
 	printf "${COLOR} $MOVES ${NOCOLOR} instructions\n"
-	TOTAL=`expr $TOTAL + $MOVES`
+	TOTAL=$(( $TOTAL + $MOVES ))
   done
-  printf "\n"
-  MEAN=`expr $TOTAL / $TotalNbTest `
-
-  printf "Mean: $MEAN for stack of size $stack_size \n\n"
-done
+  MEAN=$(( $TOTAL / $TotalNbTest ))
+  printf "\nMean: $MEAN for stack of size $stack_size \n\n"
+done 
 
 rm -rf push_swap_result.txt
