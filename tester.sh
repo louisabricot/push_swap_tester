@@ -103,7 +103,7 @@ for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
 			COLOR=${WHITE}
 		elif (( $MOVES == 8 )); then
 			COLOR=${BLUE}
-		elif (( $MOVES < 12 )); then
+		elif (( $MOVES < 13 )); then
 			COLOR=${GREEN}
 		else
 			COLOR=${RED}
