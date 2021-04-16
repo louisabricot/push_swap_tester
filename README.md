@@ -5,7 +5,7 @@ This tester *DOES NOT* check that your checker works correctly.
 
 * [What's push_swap tester?](#whats-push_swap_tester)
 * [How do I run this tester?](#how-do-I-run-this-tester)
-* [Project status](#project-status)
+* [Contribution](#contribution)
 
 
 ## What's push_swap_tester?
@@ -40,5 +40,5 @@ the following command will perform 100 tests with a stack of 100 integers, then 
 bash push_swap_tester/tester.sh ../push_swap 100-1002 100
 ```
 
-## Project status
-This project was submitted as is.
+## Contribution
+If you noticed something wrong with the code or if you'd like to see a new feature, you can submit an issue. If you'd like to contribute please submit a pull request :) 
