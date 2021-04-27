@@ -9,19 +9,42 @@
 # like: 138 527 947 967 811 33 112 526 949 27
 # enjoy :)
 
-$stacksize = $ARGV[0];
-$min = $ARGV[1];
-$max = $ARGV[2];
-@stack = ();
+use strict;
+use warnings;
+use diagnostics;
 
-if ($stacksize < 0 || $min >= $max)
+# my $min;
+# my $max;
+my ($stacksize, $min, $max) = @ARGV;
+my @stack = ();
+
+### Error management
+if (not defined $stacksize)
 {
-	print "Usage: ./genstack.pl stacksize min max";
+	die "Usage: ./genstack.pl stacksize [min] [max]\n";
+}
+elsif ($stacksize < 0)
+{
+	die "Error: stacksize can't be negative\n";
 }
 
-for ($num = 0; $num < $stacksize; )
+if (not defined $min)
 {
-	$n = int(srand() % ($max- $min) + $min);
+	$min = 0;
+}
+if (not defined $max)
+{
+	$max = $min + $stacksize;
+}
+elsif ($stacksize >= $max - $min + 1)
+{
+	die "Error: range too small\n";
+}
+
+### Build stack
+for (my $num = 0; $num < $stacksize; )
+{
+	my $n = int(srand() % ($max - $min) + $min);
 	if (!(grep { $_ eq $n } @stack))
 	{
 		push @stack, $n;
@@ -29,4 +52,3 @@ for ($num = 0; $num < $stacksize; )
 	}
 }
 print "@stack\n";
-
