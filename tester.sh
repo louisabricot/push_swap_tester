@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Created by lmalki-h with <3
-# Usage: bash visualise.sh [directory to push_swap and checker progs ] [stacksize 0R stacksize_min-stacksize_max ] [nb_of_test per stacksize]
+# Usage: ./push_swap_tester.sh [directory to push_swap and checker progs ] [stacksize 0R stacksize_min-stacksize_max ] [nb_of_test per stacksize]
 # Example 1: bash visualise.sh ../push_swap/ 5 100
 # Will test your program 100 times with a stack of 5 random ints
-# Example 2: bash visualise.sh ../push_swap/ 3-5 50
+# Example 2: ./push_swap_tester.sh ../push_swap/ 3-5 50
 # Will test your program 50 times with a stack of 3 random ints, then 50 times with 4 ints , then 50 times with 5 ints.
 
 NOCOLOR='\033[0m'
@@ -25,7 +25,7 @@ LIGHTCYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
 if [[ $# -ne 3 ]]; then
-    printf "Usage: visualise.sh [directory-to-push_swap] [stacksize 0R range] [nb_of_test]\n" >&2
+    printf "Usage: ./push_swap_tester.sh [directory-to-push_swap] [stacksize 0R range] [nb_of_test]\n" >&2
     exit -1
 fi
 
