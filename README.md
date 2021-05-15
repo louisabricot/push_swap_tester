@@ -37,7 +37,7 @@ bash push_swap_tester/tester.sh ../push_swap 100 100
    
 the following command will perform 100 tests with a stack of 100 integers, then 100 tests with a stack of 101 integers and then 100 tests with a stack of 102 integers
 ```bash
-bash push_swap_tester/tester.sh ../push_swap 100-1002 100
+bash push_swap_tester/tester.sh ../push_swap 100-102 100
 ```
 
 ## Contribution
