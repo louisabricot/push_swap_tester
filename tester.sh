@@ -7,6 +7,8 @@
 # Example 2: ./push_swap_tester.sh ../push_swap/ 3-5 50
 # Will test your program 50 times with a stack of 3 random ints, then 50 times with 4 ints , then 50 times with 5 ints.
 
+FOLDER_TESTER="$(dirname "$0")"
+
 NOCOLOR='\033[0m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -83,7 +85,7 @@ for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
 	printf "${PURPLE} Generating random numbers for stack_size $stack_size...\n\n${NOCOLOR}"
   for ((testNB = 0; testNB < $TotalNbTest; testNB++)); do
   	printf "${DARKGRAY} TEST $testNB: ${NOCOLOR}"
-	ARG=`./genstack.pl $stack_size -1000 1000` ;
+	ARG=`$FOLDER_TESTER/genstack.pl $stack_size -1000 1000` ;
 	"./$1/push_swap" $ARG > push_swap_result.txt ;
 	RESULT_CHECKER=`"./$1/checker" $ARG < push_swap_result.txt`
 	if [[ "$RESULT_CHECKER" = "KO" ]]; then
