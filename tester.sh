@@ -52,11 +52,15 @@ LIGHTPURPLE='\033[1;35m'
 LIGHTCYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
-if [[ $# -lt 3 ]] && ! ( [[ $# -ge 2 ]] && $(_inv "--retry" $@)); then
-	printf "Usage: ./push_swap_tester.sh [directory-to-push_swap] [stacksize 0R range] [nb_of_test] {options}\n" >&2
-	printf "Options:\n" >&2
-	printf "  --show-arg:\tDisplay arguments after the number of instructions.\n" >&2
-	printf "  --retry:\t\tRetry with same arguments during the last run or the specified run with --retry=[NUM].\n" >&2
+if [[ $# -lt 3 ]] && ! ( [[ $# -ge 2 ]] && $(_inv "--retry" $@) ) \
+	|| $(_inv "--help" $@) || $(_inv "-h" $@); then
+	printf "${WHITE}USAGE\n${NOCOLOR}" >&2
+	printf "./push_swap_tester.sh ${WHITE}[directory-to-push_swap] [stacksize 0R range] [nb_of_test] {options}\n${NOCOLOR}" >&2
+	printf "\n" >&2
+	printf "${WHITE}OPTIONS\n${NOCOLOR}" >&2
+	printf "  ${WHITE}--show-arg${NOCOLOR}\tDisplay arguments after the number of instructions.\n" >&2
+	printf "  ${WHITE}--retry${NOCOLOR}\t\tRetry with same arguments during the last run or the specified run with ${WHITE}--retry=[NUM]${NOCOLOR}.\n" >&2
+	printf "  ${WHITE}--help/-h${NOCOLOR}\t\tShow this message.\n" >&2
 	exit -1
 fi
 
