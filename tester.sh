@@ -13,6 +13,28 @@ function _in {
 	for e; do [[ "$e" == "$match" ]] && return 0; done
 	return 1
 }
+
+function _inv {
+	local e match="$1"
+	shift
+	for e; do [[ "$e" == "$match" || "$e" == "$match="* ]] && return 0; done
+	return 1
+}
+
+function _getv {
+	local e match="$1"
+	shift
+	for e; do
+		if [[ "$e" == "$match="* ]]; then
+			echo "$(cut -d "=" -f2 <<< "$e")"
+			return 0
+		fi
+	done
+	return 1
+}
+
+FOLDER_TESTER="$(dirname "$0")"
+
 NOCOLOR='\033[0m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -30,37 +52,73 @@ LIGHTPURPLE='\033[1;35m'
 LIGHTCYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
-if [[ $# -ne 3 ]]; then
-	printf "Usage: ./push_swap_tester.sh [directory-to-push_swap] [stacksize 0R range] [nb_of_test]\n" >&2
+if [[ $# -lt 3 ]] && ! ( [[ $# -ge 2 ]] && $(_inv "--retry" $@)); then
+	printf "Usage: ./push_swap_tester.sh [directory-to-push_swap] [stacksize 0R range] [nb_of_test] {options}\n" >&2
 	printf "Options:\n" >&2
 	printf "  --show-arg:\tDisplay arguments after the number of instructions.\n" >&2
+	printf "  --retry:\t\tRetry with same arguments during the last run or the specified run with --retry=[NUM].\n" >&2
+	exit -1
 fi
 
-rm -f push_swap_result.log
+if [ -f push_swap_run_args.log ]; then
+	NUM_LOGGED_RUN=($(grep -o '\[RUN #' push_swap_run_args.log | wc -l) + 1)
+else
+	NUM_LOGGED_RUN=0
+fi
 
 digit='^[0-9]+$' 		#digit number
 range='^[0-9]+-[0-9]+$' #range type 
 
-if [[ $2 =~ $range ]]; then
-	startRange=$(( ${2%-*} + 0))
-	endRange=$(( ${2##*-} + 0))
-elif [[ $2 =~ $digit ]]; then
-	startRange=$(( ${2%-*} + 0))
-	endRange=$(( ${2##*-} + 0))
+if [ -f push_swap_run_args.log ] && $(_inv "--retry" $@); then
+	if [[ $(_getv "--retry" $@) != "" ]]; then
+		NUM_LOGGED_RUN="$(_getv "--retry" $@)"
+		if [[ ! $NUM_LOGGED_RUN =~ $digit ]]; then
+			printf "${RED} error: --retry=%s value must be a positive number\n${NOCOLOR}" "$NUM_LOGGED_RUN">&2
+			exit -1
+		fi
+	else
+		NUM_LOGGED_RUN=$(($NUM_LOGGED_RUN - 1))
+	fi
+	TITLE=$(grep -n "\[RUN #$NUM_LOGGED_RUN \(.*\) \(.*\)" push_swap_run_args.log)
+	LINE_RUN=($(echo $TITLE | cut -d: -f1))
+	# 185:[RUN #8 10-22 10]
+	#     1    2    3    4
+	arg2="$(echo $TITLE | awk '{print $3}')"
+	arg3="$(echo $TITLE | awk -F'[ \\]]' '{print $4}')"
+	
+
+	printf "${ORANGE}Retry ${NOCOLOR}" >&2
+elif [ ! -f push_swap_run_args.log ] && $(_inv "--retry" $@); then
+	printf "${ORANGE}Can't retry because push_swap_run_args.log not found\n${NOCOLOR}" >&2
+	exit -1
 else
-	printf "${RED} error: %s must be a positive number or range\n${NOCOLOR}" "$2">&2
+	arg2=$2
+	arg3=$3
+fi
+printf "${ORANGE}RUN ${WHITE}#$NUM_LOGGED_RUN${ORANGE} with args: ${WHITE}$arg2 $arg3\n${NOCOLOR}" >&2
+
+rm -f push_swap_result.log
+
+if [[ $arg2 =~ $range ]]; then
+	startRange=$(( ${arg2%-*} + 0))
+	endRange=$(( ${arg2##*-} + 0))
+elif [[ $arg2 =~ $digit ]]; then
+	startRange=$(( ${arg2%-*} + 0))
+	endRange=$(( ${arg2##*-} + 0))
+else
+	printf "${RED} error: %s must be a positive number or range\n${NOCOLOR}" "$arg2">&2
 	exit -1
 fi
 
-if ! [[ $3 =~ $digit ]]; then
-	printf "${RED}error: %s must be a positive number\n${NOCOLOR}" "$3" >&2
+if ! [[ $arg3 =~ $digit ]]; then
+	printf "${RED}error: %s must be a positive number\n${NOCOLOR}" "$arg3" >&2
 	exit -1;
 fi
 
-TotalNbTest=$(($3 + 0))
+TotalNbTest=$(($arg3 + 0))
 
 if [[ $TotalNbTest -lt 1 ]]; then
-	printf "${RED}error: %s must be a positive number\n${NOCOLOR}" "$3" >&2
+	printf "${RED}error: %s must be a positive number\n${NOCOLOR}" "$arg3" >&2
 	exit -1;
 fi 
 
@@ -85,12 +143,23 @@ else
 	printf "${GREEN}Testing push_swap with $TotalNbTest tests from $startRange to $endRange \n\n${NOCOLOR}" >&2
 fi
 
+if ! $(_inv "--retry" $@); then
+	echo -e "[RUN #$NUM_LOGGED_RUN $arg2 $arg3]" >> push_swap_run_args.log ;
+fi
+
+global_testNB=0
 for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
 	TOTAL=0
 	printf "${PURPLE} Generating random numbers for stack_size $stack_size...\n\n${NOCOLOR}"
   for ((testNB = 0; testNB < $TotalNbTest; testNB++)); do
-  	printf "${DARKGRAY} TEST $testNB: ${NOCOLOR}"
-	ARG=`./genstack.pl $stack_size -1000 1000` ;
+  	global_testNB=$(($global_testNB + 1))
+	if $(_inv "--retry" $@); then
+		ARG=$(sed "$(($LINE_RUN + $global_testNB))!d" push_swap_run_args.log)
+	else
+		ARG=`$FOLDER_TESTER/genstack.pl $stack_size -1000 1000`
+		echo "${ARG}" >> push_swap_run_args.log
+	fi
+	printf "${DARKGRAY} TEST $testNB: ${NOCOLOR}"
 	"./$1/push_swap" $ARG > push_swap_result.log; exitCode=$?
 	RESULT_CHECKER=`"./$1/checker" $ARG < push_swap_result.log`
 	if [[ "$RESULT_CHECKER" = "KO" ]]; then
