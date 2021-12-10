@@ -7,6 +7,12 @@
 # Example 2: ./push_swap_tester.sh ../push_swap/ 3-5 50
 # Will test your program 50 times with a stack of 3 random ints, then 50 times with 4 ints , then 50 times with 5 ints.
 
+function _in {
+	local e match="$1"
+	shift
+	for e; do [[ "$e" == "$match" ]] && return 0; done
+	return 1
+}
 NOCOLOR='\033[0m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -25,11 +31,12 @@ LIGHTCYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
 if [[ $# -ne 3 ]]; then
-    printf "Usage: ./push_swap_tester.sh [directory-to-push_swap] [stacksize 0R range] [nb_of_test]\n" >&2
-    exit -1
+	printf "Usage: ./push_swap_tester.sh [directory-to-push_swap] [stacksize 0R range] [nb_of_test]\n" >&2
+	printf "Options:\n" >&2
+	printf "  --show-arg:\tDisplay arguments after the number of instructions.\n" >&2
 fi
 
-rm -f push_swap_result.txt
+rm -f push_swap_result.log
 
 digit='^[0-9]+$' 		#digit number
 range='^[0-9]+-[0-9]+$' #range type 
@@ -84,14 +91,14 @@ for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
   for ((testNB = 0; testNB < $TotalNbTest; testNB++)); do
   	printf "${DARKGRAY} TEST $testNB: ${NOCOLOR}"
 	ARG=`./genstack.pl $stack_size -1000 1000` ;
-	"./$1/push_swap" $ARG > push_swap_result.txt ;
-	RESULT_CHECKER=`"./$1/checker" $ARG < push_swap_result.txt`
+	"./$1/push_swap" $ARG > push_swap_result.log; exitCode=$?
+	RESULT_CHECKER=`"./$1/checker" $ARG < push_swap_result.log`
 	if [[ "$RESULT_CHECKER" = "KO" ]]; then
 		printf "${RED}$RESULT_CHECKER ${NOCOLOR}"
 	else
 		printf "${GREEN}$RESULT_CHECKER ${NOCOLOR}"
 	fi
-	MOVES=` cat push_swap_result.txt | wc -l`
+	MOVES=` cat push_swap_result.log | wc -l`
 	if (( $stack_size <= 3 )) ; then
 		if (( $MOVES < 3 )); then
 			COLOR=${WHITE}
@@ -134,10 +141,14 @@ for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
 		fi
 	fi
 	printf "${COLOR} $MOVES ${NOCOLOR} instructions\n"
+	if [[ "$RESULT_CHECKER" = "KO" || "$COLOR" = "$RED" \
+		|| $exitCode != 0 ]] || $(_in "--show-arg" $@); then
+		printf "\t arguments was: ${CYAN}$ARG${NOCOLOR}\n"
+	fi
 	TOTAL=$(( $TOTAL + $MOVES ))
   done
   MEAN=$(( $TOTAL / $TotalNbTest ))
   printf "\nMean: $MEAN for stack of size $stack_size \n\n"
 done 
 
-rm -rf push_swap_result.txt
+rm -rf push_swap_result.log
