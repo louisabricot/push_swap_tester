@@ -60,7 +60,15 @@ if [[ $# -lt 3 ]] && ! ( [[ $# -ge 2 ]] && $(_inv "--retry" $@) ) \
 	printf "${WHITE}OPTIONS\n${NOCOLOR}" >&2
 	printf "  ${WHITE}--show-arg${NOCOLOR}\tDisplay arguments after the number of instructions.\n" >&2
 	printf "  ${WHITE}--retry${NOCOLOR}\t\tRetry with same arguments during the last run or the specified run with ${WHITE}--retry=[NUM]${NOCOLOR}.\n" >&2
+	printf "  ${WHITE}--score${NOCOLOR}\tShow the score of the current entries, useful to compare output of two differents push_swap algo.\n" >&2
+	printf "  ${WHITE}--bench${NOCOLOR}\tUse with --score: Save the score in push_swap_benchmark.log, if is a new record or a new entries.\n" >&2
+	printf "  ${WHITE}--show-index${NOCOLOR}\tDisplay sorted index of each arguments, the index is the offset position when the list is sorted.\n" >&2
 	printf "  ${WHITE}--help/-h${NOCOLOR}\t\tShow this message.\n" >&2
+	exit -1
+fi
+
+if $(_inv "--bench" $@) && ! $(_inv "--score" $@); then
+	printf "${RED} error: --bench need --score.\n${NOCOLOR}">&2
 	exit -1
 fi
 
@@ -83,14 +91,12 @@ if [ -f push_swap_run_args.log ] && $(_inv "--retry" $@); then
 	else
 		NUM_LOGGED_RUN=$(($NUM_LOGGED_RUN - 1))
 	fi
-	TITLE=$(grep -n "\[RUN #$NUM_LOGGED_RUN \(.*\) \(.*\)" push_swap_run_args.log)
+	TITLE=$(grep -m 1 -n "\[RUN #$NUM_LOGGED_RUN \(.*\) \(.*\)" push_swap_run_args.log)
 	LINE_RUN=($(echo $TITLE | cut -d: -f1))
 	# 185:[RUN #8 10-22 10]
 	#     1    2    3    4
 	arg2="$(echo $TITLE | awk '{print $3}')"
 	arg3="$(echo $TITLE | awk -F'[ \\]]' '{print $4}')"
-	
-
 	printf "${ORANGE}Retry ${NOCOLOR}" >&2
 elif [ ! -f push_swap_run_args.log ] && $(_inv "--retry" $@); then
 	printf "${ORANGE}Can't retry because push_swap_run_args.log not found\n${NOCOLOR}" >&2
@@ -213,10 +219,59 @@ for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
 			COLOR=${RED}
 		fi
 	fi
-	printf "${COLOR} $MOVES ${NOCOLOR} instructions\n"
+	printf "${COLOR} $MOVES ${NOCOLOR} instructions"
+	INDEXES=$ARG
+	i=0
+	while read -r number
+	do
+		INDEXES=$(echo "$INDEXES" | sed -E "s/(^| )$number( |$)/\1$i\2/g")
+		i=$(($i + 1))
+	done < <(echo "$INDEXES" | tr " " "\n" | sort -g)
+	if $(_in "--score" $@); then
+		if [[ "$RESULT_CHECKER" = "OK" ]]; then
+			MATCH=""
+			if [ -f push_swap_benchmark.log ]; then
+				MATCH="$(grep -m 1 -n "\[$INDEXES\] " push_swap_benchmark.log)"
+			fi
+			if [[ $MATCH ]]; then
+					LINE_BENCH=$(echo "$MATCH" | cut -d: -f1)
+					P2=$(echo "$MATCH" | cut -d] -f2)
+					RECORD="$(echo $P2 | awk '{print $1}')"
+					DURING="$(echo $P2 | awk '{print $2}')"
+				if [[ $MOVES -eq $RECORD ]]; then
+					printf "\t${WHITE}(BEST)${NOCOLOR}"
+				elif [[ $MOVES -lt $RECORD ]]; then
+					delta=$(($MOVES - $RECORD))
+					printf "\t${WHITE}(${GREEN}$delta${WHITE} NEW RECORD"
+					printf " was ${LIGHTBLUE}$RECORD${WHITE} in $DURING)${NOCOLOR}"
+					if $(_in "--bench" $@); then
+						if [[ "$OSTYPE" == "darwin"* ]]; then #MAC
+							sed -i "" "${LINE_BENCH}d" "push_swap_benchmark.log"
+						else #LINUX
+							sed -i "${LINE_BENCH}d" "push_swap_benchmark.log"
+						fi
+						echo "[$INDEXES] $MOVES #$NUM_LOGGED_RUN" >> push_swap_benchmark.log
+					fi
+				elif [[ $MOVES -gt $RECORD ]]; then
+					delta=$(($MOVES - $RECORD))
+					printf "\t${WHITE}(${RED}+$delta${WHITE} RECORD"
+					printf " is ${LIGHTBLUE}$RECORD${WHITE} in $DURING)${NOCOLOR}"
+				fi
+			else	
+				printf "\t${WHITE}(NEW ENTRIES)${NOCOLOR}"
+				if $(_in "--bench" $@); then
+					echo "[$INDEXES] $MOVES #$NUM_LOGGED_RUN" >> push_swap_benchmark.log
+				fi
+			fi
+		fi
+	fi
+	printf "\n"
 	if [[ "$RESULT_CHECKER" = "KO" || "$COLOR" = "$RED" \
 		|| $exitCode != 0 ]] || $(_in "--show-arg" $@); then
 		printf "\t arguments was: ${CYAN}$ARG${NOCOLOR}\n"
+		if $(_in "--show-index" $@); then
+			printf "\t args index is: ${CYAN}$INDEXES${NOCOLOR}\n"
+		fi
 	fi
 	TOTAL=$(( $TOTAL + $MOVES ))
   done
