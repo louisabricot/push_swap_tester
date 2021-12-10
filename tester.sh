@@ -58,12 +58,12 @@ if [[ $# -lt 3 ]] && ! ( [[ $# -ge 2 ]] && $(_inv "--retry" $@) ) \
 	printf "./push_swap_tester.sh ${WHITE}[directory-to-push_swap] [stacksize 0R range] [nb_of_test] {options}\n${NOCOLOR}" >&2
 	printf "\n" >&2
 	printf "${WHITE}OPTIONS\n${NOCOLOR}" >&2
-	printf "  ${WHITE}--show-arg${NOCOLOR}\tDisplay arguments after the number of instructions.\n" >&2
-	printf "  ${WHITE}--retry${NOCOLOR}\t\tRetry with same arguments during the last run or the specified run with ${WHITE}--retry=[NUM]${NOCOLOR}.\n" >&2
-	printf "  ${WHITE}--score${NOCOLOR}\tShow the score of the current entries, useful to compare output of two differents push_swap algo.\n" >&2
-	printf "  ${WHITE}--bench${NOCOLOR}\tUse with --score: Save the score in push_swap_benchmark.log, if is a new record or a new entries.\n" >&2
-	printf "  ${WHITE}--show-index${NOCOLOR}\tDisplay sorted index of each arguments, the index is the offset position when the list is sorted.\n" >&2
-	printf "  ${WHITE}--help/-h${NOCOLOR}\t\tShow this message.\n" >&2
+	printf "  ${WHITE}--show-arg${NOCOLOR}    Display arguments after the number of instructions.\n" >&2
+	printf "  ${WHITE}--retry${NOCOLOR}       Retry with same arguments during the last run or the specified run with ${WHITE}--retry=[NUM]${NOCOLOR}.\n" >&2
+	printf "  ${WHITE}--score${NOCOLOR}       Show the score of the current entries, useful to compare output of two differents push_swap algo.\n" >&2
+	printf "  ${WHITE}--bench${NOCOLOR}       Use with --score: Save the score in push_swap_benchmark.log, if is a new record or a new entries.\n" >&2
+	printf "  ${WHITE}--show-index${NOCOLOR}  Display sorted index of each arguments, the index is the offset position when the list is sorted.\n" >&2
+	printf "  ${WHITE}--help/-h${NOCOLOR}     Show this message.\n" >&2
 	exit -1
 fi
 
