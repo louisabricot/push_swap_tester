@@ -62,7 +62,8 @@ if [[ $# -lt 3 ]] && ! ( [[ $# -ge 2 ]] && $(_inv "--retry" $@) ) \
 	printf "  ${WHITE}--quiet${NOCOLOR}       Don't display arguments if the tester catch an error.\n" >&2
 	printf "  ${WHITE}--retry${NOCOLOR}       Retry with same arguments during the last run or the specified run with ${WHITE}--retry=[NUM]${NOCOLOR}.\n" >&2
 	printf "  ${WHITE}--score${NOCOLOR}       Show the score of the current entries, useful to compare output of two differents push_swap algo.\n" >&2
-	printf "  ${WHITE}--bench${NOCOLOR}       Use with --score: Save the score in push_swap_benchmark.log, if is a new record or a new entries.\n" >&2
+	printf "  ${WHITE}--bench${NOCOLOR}       Use with --score, save the score in push_swap_benchmark.log, if is a new record or a new entries.\n" >&2
+	printf "  ${WHITE}       ${NOCOLOR}       Use --rewrite-bench to erase saved score by the current score.\n" >&2
 	printf "  ${WHITE}--show-index${NOCOLOR}  Display sorted index of each arguments, the index is the offset position when the list is sorted.\n" >&2
 	printf "  ${WHITE}--help/-h${NOCOLOR}     Show this message.\n" >&2
 	exit -1
@@ -241,7 +242,7 @@ for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
 					DURING="$(echo $P2 | awk '{print $2}')"
 				if [[ $MOVES -eq $RECORD ]]; then
 					printf "\t${WHITE}(BEST)${NOCOLOR}"
-				elif [[ $MOVES -lt $RECORD ]]; then
+				elif [[ $MOVES -lt $RECORD ]] || $(_in "--rewrite-bench" $@); then
 					delta=$(($MOVES - $RECORD))
 					printf "\t${WHITE}(${GREEN}$delta${WHITE} NEW RECORD"
 					printf " was ${LIGHTBLUE}$RECORD${WHITE} in $DURING)${NOCOLOR}"
