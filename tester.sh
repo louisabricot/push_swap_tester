@@ -59,6 +59,7 @@ if [[ $# -lt 3 ]] && ! ( [[ $# -ge 2 ]] && $(_inv "--retry" $@) ) \
 	printf "\n" >&2
 	printf "${WHITE}OPTIONS\n${NOCOLOR}" >&2
 	printf "  ${WHITE}--show-arg${NOCOLOR}    Display arguments after the number of instructions.\n" >&2
+	printf "  ${WHITE}--quiet${NOCOLOR}       Don't display arguments if the tester catch an error.\n" >&2
 	printf "  ${WHITE}--retry${NOCOLOR}       Retry with same arguments during the last run or the specified run with ${WHITE}--retry=[NUM]${NOCOLOR}.\n" >&2
 	printf "  ${WHITE}--score${NOCOLOR}       Show the score of the current entries, useful to compare output of two differents push_swap algo.\n" >&2
 	printf "  ${WHITE}--bench${NOCOLOR}       Use with --score: Save the score in push_swap_benchmark.log, if is a new record or a new entries.\n" >&2
@@ -266,8 +267,8 @@ for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
 		fi
 	fi
 	printf "\n"
-	if [[ "$RESULT_CHECKER" = "KO" || "$COLOR" = "$RED" \
-		|| $exitCode != 0 ]] || $(_in "--show-arg" $@); then
+	if (! $(_in "--quiet" $@) && [[ "$RESULT_CHECKER" = "KO" || "$COLOR" = "$RED" \
+		|| $exitCode != 0 ]]) || $(_in "--show-arg" $@); then
 		printf "\t arguments was: ${CYAN}$ARG${NOCOLOR}\n"
 		if $(_in "--show-index" $@); then
 			printf "\t args index is: ${CYAN}$INDEXES${NOCOLOR}\n"
