@@ -271,9 +271,9 @@ for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
 	if (! $(_in "--quiet" $@) && [[ "$RESULT_CHECKER" = "KO" || "$COLOR" = "$RED" \
 		|| $exitCode != 0 ]]) || $(_in "--show-arg" $@); then
 		printf "\t arguments was: ${CYAN}$ARG${NOCOLOR}\n"
-		if $(_in "--show-index" $@); then
-			printf "\t args index is: ${CYAN}$INDEXES${NOCOLOR}\n"
-		fi
+	fi
+	if $(_in "--show-index" $@); then
+		printf "\t args index is: ${CYAN}$INDEXES${NOCOLOR}\n"
 	fi
 	TOTAL=$(( $TOTAL + $MOVES ))
   done
