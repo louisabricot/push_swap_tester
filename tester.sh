@@ -34,7 +34,8 @@ function _getv {
 }
 
 FOLDER_TESTER="$(dirname "$0")"
-
+UNAME="$(uname)"
+$CHECKER_OS$CHECKER_OSCHEC$(CHCKER_OS$CHECKER_OSc%$cCEHECKER_OS
 NOCOLOR='\033[0m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -51,6 +52,14 @@ LIGHTBLUE='\033[1;34m'
 LIGHTPURPLE='\033[1;35m'
 LIGHTCYAN='\033[1;36m'
 WHITE='\033[1;37m'
+
+if [ $UNAME == Linux ]; then
+	CHECKER_OS="checker_linux"
+elif [ $UNAME == darwin ]; then
+	CHECKER_OS="checker_Mac"
+else
+	CHECKER_OS="checker"
+fi
 
 if [[ $# -lt 3 ]] && ! ( [[ $# -ge 2 ]] && $(_inv "--retry" $@) ) \
 	|| $(_inv "--help" $@) || $(_inv "-h" $@); then
@@ -81,7 +90,7 @@ else
 fi
 
 digit='^[0-9]+$' 		#digit number
-range='^[0-9]+-[0-9]+$' #range type 
+range='^[0-9]+-[0-9]+$' #range type
 
 if [ -f push_swap_run_args.log ] && $(_inv "--retry" $@); then
 	if [[ $(_getv "--retry" $@) != "" ]]; then
@@ -132,7 +141,7 @@ TotalNbTest=$(($arg3 + 0))
 if [[ $TotalNbTest -lt 1 ]]; then
 	printf "${RED}error: %s must be a positive number\n${NOCOLOR}" "$arg3" >&2
 	exit -1;
-fi 
+fi
 
 if (( $endRange < $startRange )); then
 	printf "${RED}error: invalid range\n${NOCOLOR}" >&2
@@ -142,14 +151,14 @@ fi
 if ! [[ -f "$1/push_swap" ]]; then
 	printf "${RED}error: could not find push_swap in $1 \n${NOCOLOR}" >&2
 	exit -1;
-elif ! [[ -f "$1/checker" ]]; then
-	printf "${RED}error: could not find checker in $1 \n${NOCOLOR}" >&2
+elif ! [[ -f "$1/$CHECKER_OS" ]]; then
+	printf "${RED}error: could not find $CHECKER_OS in $1 \n${NOCOLOR}" >&2
 	exit -1;
 elif ! [[ -x "$1/push_swap" ]]; then
 	printf "${RED}error: cannot execute push_swap in $1 \n${NOCOLOR}" >&2
 	exit -1;
-elif ! [[ -x "$1/checker" ]]; then
-	printf "${RED}error: cannot execute checker in $1 \n${NOCOLOR}" >&2
+elif ! [[ -x "$1/$CHCKER_OS" ]]; then
+	printf "${RED}error: cannot execute $CHECKER_OS in $1 \n${NOCOLOR}" >&2
 	exit -1;
 else
 	printf "${GREEN}Testing push_swap with $TotalNbTest tests from $startRange to $endRange \n\n${NOCOLOR}" >&2
@@ -173,7 +182,7 @@ for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
 	fi
 	printf "${DARKGRAY} TEST $testNB: ${NOCOLOR}"
 	"./$1/push_swap" $ARG > push_swap_result.log; exitCode=$?
-	RESULT_CHECKER=`"./$1/checker" $ARG < push_swap_result.log`
+	RESULT_CHECKER=`"./$1/$CHECKER_OS" $ARG < push_swap_result.log`
 	if [[ "$RESULT_CHECKER" = "KO" ]]; then
 		printf "${RED}$RESULT_CHECKER ${NOCOLOR}"
 	else
@@ -259,7 +268,7 @@ for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
 					printf "\t${WHITE}(${RED}+$delta${WHITE} RECORD"
 					printf " is ${LIGHTBLUE}$RECORD${WHITE} in $DURING)${NOCOLOR}"
 				fi
-			else	
+			else
 				printf "\t${WHITE}(NEW ENTRIES)${NOCOLOR}"
 				if $(_in "--bench" $@); then
 					echo "[$INDEXES] $MOVES #$NUM_LOGGED_RUN" >> push_swap_benchmark.log
@@ -279,6 +288,6 @@ for ((stack_size = $startRange; stack_size <= $endRange; stack_size++)); do
   done
   MEAN=$(( $TOTAL / $TotalNbTest ))
   printf "\nMean: $MEAN for stack of size $stack_size \n\n"
-done 
+done
 
 rm -rf push_swap_result.log
